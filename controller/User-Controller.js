@@ -48,11 +48,11 @@ await User.findOne({email:req.body.email}).then((login)=>{
                 res.json({status:1,message:"Login sucessfull",token})
                 
             }else{
-                res.json({status:1,message:'check email & password'})
+                res.json({message:'check email & password'})
             }
         })
     }else{
-        res.json({ status:2,message:'User not found'})
+        res.json({ status:0,message:'User not found'})
     }
 })    
 }

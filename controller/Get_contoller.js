@@ -179,4 +179,4 @@ const movieListAggregation =async(req,res)=>{
 
 }
 
-module.exports = { createTodo, getTodo, updateTodo, deleteTodo, getallTodo, updateMission }
+module.exports = { createTodo, getTodo, updateTodo, deleteTodo, getallTodo, updateMission,movieListAggregation }
