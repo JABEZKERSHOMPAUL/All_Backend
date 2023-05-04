@@ -93,4 +93,89 @@ const getallTodo = async (req, res) => {
 
 }
 
+const movieListAggregation =async(req,res)=>{
+    try {
+        const {search,limit,skip}=req.body
+       let query=[]
+       if(search!==""){
+        query.push({
+            $match:{
+                $or:[
+                    {
+                        moviename:{
+                            $regex:search+ '.*',
+                            $options:'si'
+                        }
+                    },
+                    {
+                        directedby:{
+                            $regex:search+ '.*',
+                            $options:'si'
+                        }
+                    },
+                    {
+                        produced:{
+                            $regex:search+ '.*',
+                            $options:'si'
+                        }
+                    }
+                ]
+            }
+        })
+       }
+       const withoutlimit =Object.assign([],query)
+       withoutlimit.push({$count:'count'})
+
+       query.push(
+        {$skip:skip},
+        {$limit:limit},
+        {
+            $project:{
+                moviename:1,
+                relesedate:1,
+                produced:1,
+                directedby:1
+            }
+        }
+        )
+
+        const finalquery =[
+            {
+                $facet:{
+                    overall:withoutlimit,
+                    documentdata:query
+                }
+            }
+        ]
+
+        const getAlldata = await studentDetail.aggregate(finalquery)
+        const data = getAlldata[0].documentdata
+        const fullCount = getAlldata[0]?.overall[0]?.count
+
+        if(data.length>0){
+            res.json({
+                status:1,
+                response:{
+                    result:data,
+                    fullcount:fullCount,
+                    length:data.length
+                }
+            })
+        }else{
+            res.json({
+                status:0,
+                response:{
+                    result:[],
+                    fullcount:fullCount,
+                    length:data.length
+                }
+            })
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+
+}
+
 module.exports = { createTodo, getTodo, updateTodo, deleteTodo, getallTodo, updateMission }
